@@ -3,11 +3,11 @@
 ## on a non-convex volume. The generated data sets contains 4 columns: 
 ## 3 features/traits columns (one column for each of the cartesian 
 ## coordinates x, y and z) and 1 column for the outcome (a 2-level 
-## factor - 0 or 1). The rows that have the value of the outcome = 1 are inside 
-## a torus with user-specified parameters: torus 'r' and 'R'.
-## All arguments of the 'make.simple.torus.data' function have default values  
-## so a function call with no arguments - make.torus.data() - will still be  
-## valid and will return the data sets.
+## factor - 'outside' or 'inside'). The rows that have the value of the 
+## outcome = 'inside' are inside a torus with user-specified parameters: 
+## torus 'r' and 'R'. All arguments of the 'make.simple.torus.data' function 
+## have default values so a function call with no arguments [make.torus.data()] 
+## will still be valid and will return the data sets.
 ## The function takes as input the following parameters:
 ##      - R = the large radius of the torus
 ##      - r = the small radius of the torus
@@ -20,7 +20,7 @@
 ## Load the required 'plot3D' library (for 'mesh') and the multicore 
 ## parallelization library 'doMC'
 
-make.simple.torus.data <- function(R = 8, r = 2, n = 10) {
+make.simple.torus.data <- function(R = 8, r = 2, n = 12) {
     ## Defina the function to test if a point is inside the torus
     is.inside.torus <- function(x) 
         ifelse((R - sqrt(x[1] ^ 2 + x[2] ^ 2)) ^ 2 + x[3] ^ 2 < r ^ 2, 1, 0)
@@ -49,7 +49,8 @@ make.simple.torus.data <- function(R = 8, r = 2, n = 10) {
                                  as.vector(M.train$y), 
                                  as.vector(M.train$z)))
     train.inside.torus <- as.integer(apply(train.mat, 1, is.inside.torus))
-
+    train.inside.torus <- as.factor(ifelse(train.inside.torus > 0, "inside", 
+                                           "outside"))
     ## Create the final train data frame
     train.data <- data.frame(x = train.mat[,1], 
                              y = train.mat[,2], 
@@ -76,7 +77,9 @@ make.simple.torus.data <- function(R = 8, r = 2, n = 10) {
                                 as.vector(M.test$y), 
                                 as.vector(M.test$z)))
     test.inside.torus <- as.integer(apply(test.mat, 1, is.inside.torus))
-
+    test.inside.torus <- as.factor(ifelse(test.inside.torus > 0, "inside", 
+                                          "outside"))
+    
     ## Create the final test data frame
     test.data <- data.frame(x = test.mat[,1], 
                             y = test.mat[,2], 

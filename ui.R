@@ -4,23 +4,25 @@ library(scatterplot3d)
 library(MASS)
 library(kknn)
 library(ROCR)
+library(doMC)
 
 
 shinyUI(fixedPage(
-    h2("'Guess-the-Torus' - simple nonlinear binary classification", 
+    h3("'Guess-the-Torus' - simple nonlinear binary classification", 
        align = "center"),
     withMathJax(),
     h4("Synopsis"),
-    p("'Guess-the-Torus' application demonstrates some of the basic 
-      capabilities of the ", strong("Shiny"), " R package. The application 
+    p("'", strong("Guess-the-Torus"), "' application demonstrates some of the 
+      basic capabilities of the ", strong("Shiny"), " R package. The application 
       generates two data sets - a training data set and a testing data set. Each 
       data set has 4 columns and a user-specified number rows. The first three 
       columns (labeled 'x', 'y' and 'z') are the Cartesian coordinates of a 
-      point in the 3D space and the last column (labeled 'outcome') has a value 
-      of '0' or '1', depending on the point's position in space. All 3D points 
-      that are inside of a torus centered in origin with R = 8 and r = 2 have 
-      been labeled '1' and the 3D points outside the torus have been 
-      labeled '0'."),
+      point in the 3D space and the last column (a factor labeled 'outcome') has 
+      a value of 'inside' or 'outside', depending on the point's position in 
+      space. All 3D points that are inside of a torus centered in origin with 
+      R = 8 and r = 2 have been labeled '", span(strong("inside"), 
+      style = "color:blue"), "' and the 3D points outside the torus have been 
+      labeled '", span(strong("outside"), style = "color:blue"), "'."),
     fixedRow(
         column(5,
                br(),
@@ -41,7 +43,7 @@ shinyUI(fixedPage(
                  strong("ROC"), " curve for the model.")
         ),
         column(7,
-            plotOutput(outputId = "torus_3d_plot"),
+            plotOutput(outputId = "torus_3d_plot", height = "350px"),
             br()
         )
     ),
@@ -56,31 +58,33 @@ shinyUI(fixedPage(
                  data sets will be \\(n^3\\). The default value of n is 12, so 
                  the initial number of rows in both data sets is 1728. The 
                  maximum value of n is 20 (8000 rows in the data set) such that 
-                 the training of the KNN model will not take a very long time."),
+                 the training of the kNN model will not take a very long time."),
                p("The slider below can be used to change the value of n. The 3D 
-                 scatterplot besides the slider shows a sample (60%) of the 
-                 generated training set."),
+                 scatterplot shows a sample (60%) of the generated training set 
+                 and will be updated with each change of the number of points 
+                 in the data sets."),
                br(),
                sliderInput('n', 'Number of points on each of the axes', 
                            value = 12, min = 10, max = 20, step = 2),
                br(),
-               p("Rows in each of the data sets: ", textOutput("nrows", strong))
+               p("Rows in each of the data sets: ", 
+                 span(textOutput("nrows", strong), style = "color:red"))
         ),
-        column(8, plotOutput(outputId = "training_3d_scatterplot"))
+        column(8, plotOutput(outputId = "training_3d_scatterplot", height = "400px"))
     ),
-    h4("KNN model performance"),
+    h4("kNN model performance"),
     fixedRow(
         column(4,
-               p("To train the ", strong("K-Nearest Neighbors"), " model the ",
-                 strong("kknn"), " function from the ", strong("kknn"), 
-                 " R packge is used on the training data set."),
+               p("To train the ", strong("k-Nearest Neighbors"), " model the ",
+                 strong("kknn"), " function from the '", strong("kknn"), 
+                 "' R packge is used on the training data set."),
                p("After the model is trained, the performance is estimated 
                  from the predictions on 
                  the testing data set and the ", strong("ROC"), " curve is 
                  ploted using several functions from the ", strong("ROCR"), 
                  " R package."),
                p("As the data sets size (number of rows) changes, the accuracy 
-                 of the KNN model changes. That change can be observed in the 
+                 of the kNN model changes. That change can be observed in the 
                  shape of the ", strong("ROC"), " curve. The data sets 
                  generation and the training of the model will take longer when 
                  n is large.")
@@ -110,7 +114,9 @@ shinyUI(fixedPage(
                             value = -5.00, min = -5.00, max = 5.00, step = 0.01)
         )
     ),
-    p("KNN model prediction = ", textOutput("knn_prediction", strong), 
-      " - True position = ", textOutput("true_position", strong)),
+    p("KNN model prediction = ", span(textOutput("knn_prediction", strong), 
+                                      style = "color:blue"), 
+      " - True position = ", span(textOutput("true_position", strong), 
+                                  style = "color:green")),
     br()
 ))

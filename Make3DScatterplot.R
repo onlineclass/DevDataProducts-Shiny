@@ -20,7 +20,7 @@ plot.3D.data <- function(data, density.plot = T) {
     outcome.ndx = ncol(data)
     
     ## Create the subset of the original data which will be plotted
-    plot.data <- data[data[,outcome.ndx] > 0,]
+    plot.data <- data[data[,outcome.ndx] == "inside",]
     
     ## Define the background color
     bg.col <- c("#FF000088")
@@ -60,15 +60,18 @@ plot.3D.data <- function(data, density.plot = T) {
         clines.yz <- contourLines(yzDensity, nlevels = 8)
         
         lapply(clines.xy, function(cl) {
-            polygon(s3d$xyz.convert(cl$x, cl$y, rep(-10, length(cl$x))), lwd = 1)
+            polygon(s3d$xyz.convert(cl$x, cl$y, rep(-10, length(cl$x))), 
+                    lwd = 1, border = "#50505088")
         })
         
         lapply(clines.xz, function(cl) {
-            polygon(s3d$xyz.convert(cl$x, rep(20, length(cl$x)), cl$y), lwd = 1)
+            polygon(s3d$xyz.convert(cl$x, rep(20, length(cl$x)), cl$y), 
+                    lwd = 1, border = "#50505088")
         })
         
         lapply(clines.yz, function(cl) {
-            polygon(s3d$xyz.convert(rep(-20, length(cl$x)), cl$x, cl$y), lwd = 1)
+            polygon(s3d$xyz.convert(rep(-20, length(cl$x)), cl$x, cl$y), 
+                    lwd = 1, border = "#50505088")
         })
     }
     
